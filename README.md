@@ -1,4 +1,4 @@
-# telescope-sonictemplate
+# telescope-sonictemplate.nvim
 
 Integration for [sonictemplate-vim](https://github.com/mattn/vim-sonictemplate) with [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim).
 
@@ -11,7 +11,7 @@ Integration for [sonictemplate-vim](https://github.com/mattn/vim-sonictemplate) 
 ## Installation
 
 ```
-Plug 'telescope-sonictemplate'
+Plug 'tamago324/telescope-sonictemplate.nvim'
 
 lua require'telescope'.load_extensions('sonictemplate')
 ```
