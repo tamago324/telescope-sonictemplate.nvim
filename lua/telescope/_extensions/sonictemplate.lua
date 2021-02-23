@@ -1,4 +1,5 @@
 local actions = require 'telescope.actions'
+local actions_state = require 'telescope.actions.state'
 local pickers = require 'telescope.pickers'
 local sorters = require 'telescope.sorters'
 local finders = require 'telescope.finders'
@@ -10,6 +11,8 @@ local Path = require 'plenary.path'
 local scandir = require 'plenary.scandir'
 
 local a = vim.api
+
+--- TODO: use vim.api.nvim_get_runtime_file()
 
 -----------------------------
 -- Private
@@ -176,9 +179,9 @@ local templates = function(opts)
     previewer = previewers.cat.new(opts),
     sorter = conf.generic_sorter(opts),
     attach_mappings = function(prompt_bufnr)
-      actions.goto_file_selection_edit:replace(
+      actions.select_default:replace(
           function()
-            local selection = actions.get_selected_entry()
+            local selection = actions_state.get_selected_entry()
             actions.close(prompt_bufnr)
             vim.fn['sonictemplate#apply'](selection.value, 'n')
           end)
