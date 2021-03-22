@@ -23,7 +23,7 @@ local a = vim.api
 local globpath = function(path, pattern)
   return vim.tbl_filter(function(v)
     return vim.regex(pattern):match_str(v) ~= nil
-  end, scandir.scan_dir(path))
+  end, scandir.scan_dir(path, { silent = true }))
 end
 
 local remove_end_slash = function(path)
