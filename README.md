@@ -1,11 +1,11 @@
 # telescope-sonictemplate.nvim
 
-Integration for [sonictemplate-vim](https://github.com/mattn/vim-sonictemplate) with [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim).
+Integration for [vim-sonictemplate](https://github.com/mattn/vim-sonictemplate) with [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim).
 
 ## Requirements
 
 * [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
-* [sonictemplate-vim](https://github.com/mattn/vim-sonictemplate)
+* [vim-sonictemplate](https://github.com/mattn/vim-sonictemplate)
 
 
 ## Installation
