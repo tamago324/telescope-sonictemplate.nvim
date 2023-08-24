@@ -176,8 +176,6 @@ local templates = function(opts)
         }
       end,
     },
-    -- previewer = previewers.cat.new(opts),
-    -- previewer = previewers.cat(opts),
     previewer = previewers.vim_buffer_cat.new(opts),
     sorter = conf.generic_sorter(opts),
     attach_mappings = function(prompt_bufnr)
