@@ -13,7 +13,7 @@ Integration for [vim-sonictemplate](https://github.com/mattn/vim-sonictemplate) 
 ```
 Plug 'tamago324/telescope-sonictemplate.nvim'
 
-lua require'telescope'.load_extensions('sonictemplate')
+lua require'telescope'.load_extension('sonictemplate')
 ```
 
 ## Usage
