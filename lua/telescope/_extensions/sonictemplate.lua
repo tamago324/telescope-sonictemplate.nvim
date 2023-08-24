@@ -177,6 +177,8 @@ local templates = function(opts)
       end,
     },
     -- previewer = previewers.cat.new(opts),
+    -- previewer = previewers.cat(opts),
+    previewer = previewers.vim_buffer_cat(opts),
     sorter = conf.generic_sorter(opts),
     attach_mappings = function(prompt_bufnr)
       actions.select_default:replace(
