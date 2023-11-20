@@ -85,12 +85,10 @@ local get_filetype = function()
 end
 
 -- from sonictemplate#apply()
-local find_template_path = function(entry, bufnr)
-  local name = entry:gmatch("%S+")()
+local make_find_template_path = function(bufnr)
   local buffer_is_not_empty = not (a.nvim_buf_line_count(bufnr) == 1 and
                                   a.nvim_buf_get_lines(bufnr, 0, 1, false)[1] ==
                                   '')
-  local fs = {}
 
   -- prefix を、バッファが空かどうかによって、決定する
   local prefix = getopt('prefix')
@@ -100,8 +98,8 @@ local find_template_path = function(entry, bufnr)
 
   -- filetype のリストを決める
   local fts
-  local ft = getopt('filetype')
-  if ft == '' then
+  local filetype = getopt('filetype')
+  if filetype == '' then
     fts = {
       get_raw_filetype(),
       get_filetype(),
@@ -109,51 +107,41 @@ local find_template_path = function(entry, bufnr)
       '_',
     }
   else
-    fts = {ft}
+    fts = {filetype}
   end
 
+  local tmpldir = get_tmpldir()
+
+  local scan_targets = {}
+  for _, tmpdir in ipairs(tmpldir) do
+    local p = Path:new(tmpdir)
+    for _, ft in ipairs(fts) do
+      table.insert(scan_targets, p:joinpath(ft):absolute())
+    end
+    table.insert(scan_targets, p:joinpath('_'):absolute())
+  end
+  local scan_target_pathset = vim.fn.join(scan_targets, ',')
+
+  local candidates = {}
   if prefix == 'base' then
-    for _, tmpdir in ipairs(get_tmpldir()) do
-      local p = Path:new(tmpdir)
-      for _, ft in ipairs(fts) do
-        for i, v in ipairs(globpath(p:joinpath(ft):absolute(), 'file-' .. name)) do
-          table.insert(fs, v)
-        end
-      end
-      for _, ft in ipairs(fts) do
-        for i, v in
-            ipairs(globpath(p:joinpath('_'):absolute(), 'file-' .. name)) do
-          table.insert(fs, v)
-        end
+    for _, v in ipairs(vim.fn.globpath(scan_target_pathset, 'file-*', false, true)) do
+      local name = vim.fn.fnamemodify(v, ':t:r'):sub(6)
+      if candidates[name] == nil then
+        candidates[name] = v
       end
     end
   end
-
-  if #fs == 0 then
-    for _, tmpdir in ipairs(get_tmpldir()) do
-      local p = Path:new(tmpdir)
-      for _, ft in ipairs(fts) do
-        for i, v in ipairs(globpath(p:joinpath(ft):absolute(),
-                                    prefix .. '-' .. name)) do
-          table.insert(fs, v)
-        end
-      end
-
-      for _, ft in ipairs(fts) do
-        for i, v in ipairs(globpath(p:joinpath('_'):absolute(),
-                                    prefix .. '-' .. name)) do
-          table.insert(fs, v)
-        end
-      end
+  for _, v in ipairs(vim.fn.globpath(scan_target_pathset, prefix .. '-*', false, true)) do
+    local name = vim.fn.fnamemodify(v, ':t:r'):sub(#prefix + 2)
+    if candidates[name] == nil then
+      candidates[name] = v
     end
   end
 
-  if #fs == 0 then
-    -- not found
-    return ''
+  return function (entry)
+    local name = entry:gmatch("%S+")()
+    return candidates[name]
   end
-
-  return fs[1]
 end
 
 -----------------------------
@@ -162,6 +150,8 @@ end
 local templates = function(opts)
   opts = opts or {}
   local bufnr = a.nvim_get_current_buf()
+
+  local find_template_path = make_find_template_path(bufnr)
 
   pickers.new(opts, {
     prompt_title = 'Template',
@@ -172,7 +162,7 @@ local templates = function(opts)
           value = entry,
           display = entry,
           ordinal = entry,
-          filename = find_template_path(entry, bufnr),
+          filename = find_template_path(entry),
         }
       end,
     },
